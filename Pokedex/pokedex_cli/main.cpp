@@ -6,22 +6,145 @@
 #include <unordered_map>
 #include <vector>
 
-void printPokemonData(const rapidjson::Document& pokemonJsonFile, const rapidjson::Document& pokemonStatsJsonDocument)
+void wrapPokemonJson(const std::string& pokemonNum, const std::string& pokemonFilename,
+                     rapidjson::Document& pokemonJsonDocument)
+{
+    std::ifstream pokemonJsonFile("");
+
+    //Closing file and reopening it so string stream can start from the beginning of the file.
+    pokemonJsonFile.clear();
+    pokemonJsonFile.close();
+    pokemonJsonFile.open("../pokemon/" + pokemonNum + '/' + pokemonFilename);
+
+    rapidjson::IStreamWrapper pokemonJsonWrapper(pokemonJsonFile);
+    pokemonJsonDocument.ParseStream(pokemonJsonWrapper);
+}
+
+void printPokemonEvoChainDFS(std::string previousPokemonName, const rapidjson::Value& EvoChain)
+{
+    // run a recursive loop to print the evolution line if "evolves_to" not null
+    for(auto& i : EvoChain.GetArray())
+    {
+        if (EvoChain.Size() > 1)
+        {
+            // print next evolution chain
+            std::string pokemonName{i["species"]["name"].GetString()};
+            pokemonName[0] = std::toupper(pokemonName[0]);
+            std::cout << previousPokemonName << " can evolve into " << pokemonName;
+
+            assert(i["evolves_to"].IsArray());
+            printPokemonEvoChainDFS(pokemonName, i["evolves_to"]);
+        }
+        else if(i["evolves_to"].Empty())
+        {
+            // print next evolution chain
+            std::string pokemonName{i["species"]["name"].GetString()};
+            pokemonName[0] = std::toupper(pokemonName[0]);
+            std::cout << previousPokemonName << " evolves into " << pokemonName << ".\n";
+        }
+        else
+        {
+            // print next evolution chain
+            std::string pokemonName{i["species"]["name"].GetString()};
+            pokemonName[0] = std::toupper(pokemonName[0]);
+            std::cout << previousPokemonName << " evolves into " << pokemonName << " then ";
+
+            assert(i["evolves_to"].IsArray());
+            printPokemonEvoChainDFS(pokemonName, i["evolves_to"]);
+        }
+    }
+}
+
+void printPokemonEvolutions(const rapidjson::Document& pokemonEvolutionsJsonFile)
+{
+    if(pokemonEvolutionsJsonFile["chain"]["evolves_to"].Empty())
+    {
+        // print the only line in the evolution chain
+        std::string pokemonName{pokemonEvolutionsJsonFile["chain"]["species"]["name"].GetString()};
+        pokemonName[0] = std::toupper(pokemonName[0]);
+        std::cout << '\n' << pokemonName << " does not evolve into anything.\n";
+    }
+    else
+    {
+        // print first chain of evolution line
+        std::string pokemonName{pokemonEvolutionsJsonFile["chain"]["species"]["name"].GetString()};
+        pokemonName[0] = std::toupper(pokemonName[0]);
+        std::cout << "\nEvolution Chain: ";
+
+        const rapidjson::Value& arrayOfEvolutions = pokemonEvolutionsJsonFile["chain"]["evolves_to"];
+        printPokemonEvoChainDFS(pokemonName, arrayOfEvolutions);
+    }
+
+}
+
+void printPokemonName(const rapidjson::Document& pokemonJsonFile)
 {
     // printing the Pokemon's name with the first letter capitalized.
     std::string pokemonName{pokemonJsonFile["name"].GetString()};
     pokemonName[0] = std::toupper(pokemonName[0]);
-    std::cout << "Pokemon Name: " << pokemonName << "\n";
+    std::cout << "\nPokemon Name: " << pokemonName << "\n";
+}
 
-    // printing pokemon types
+void printPokemonTypes(const rapidjson::Document& pokemonStatsJsonDocument)
+{
+    // printing Pokemon types
     const rapidjson::Value& arrayOfTypes = pokemonStatsJsonDocument["types"];
-    assert(arrayOfTypes.IsArray());
+    assert(arrayOfTypes.IsArray() && "arrayOfTypes is not an array");
+
     int typeNum{1};
     for(auto& i : arrayOfTypes.GetArray())
     {
-        std::cout << "Type " << typeNum << ": " << i["type"]["name"].GetString() << '\n';
+        std::string pokemonType {i["type"]["name"].GetString()};
+        pokemonType[0] = std::toupper(pokemonType[0]);
+
+        std::cout << "Type " << typeNum << ": " << pokemonType << '\n';
         typeNum++;
     }
+}
+
+void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Document& pokemonStatsJsonDocument)
+{
+    std::unordered_map<std::string, int> typeDamageMap;
+
+    const rapidjson::Value& arrayOfTypes = pokemonStatsJsonDocument["types"];
+    assert(arrayOfTypes.IsArray() && "arrayOfTypes is not an array");
+
+    for(auto& i : arrayOfTypes.GetArray())
+    {
+        std::string pokemonType {i["type"]["name"].GetString()};
+
+        // Creating document types using rapidjson
+        rapidjson::Document pokemonTypeJsonFile;
+        std::string pokemonDamageJsonFilename{pokemonType + ".json"};
+
+        wrapPokemonJson(pokemonNum, pokemonDamageJsonFilename,
+                        pokemonTypeJsonFile);
+
+        for(auto& i : pokemonTypeJsonFile["damage_relations"]["double_damage_from"].GetArray())
+        {
+
+        }
+    }
+
+
+}
+
+void printPokemonData(const std::string& pokemonNum,
+                      const rapidjson::Document& pokemonJsonFile,
+                      const rapidjson::Document& pokemonStatsJsonDocument,
+                      rapidjson::Document& pokemonEvolutionsJsonFile)
+{
+    // printing the Pokemon's name with the first letter capitalized.
+    printPokemonName(pokemonJsonFile);
+
+    // printing Pokemon types
+    printPokemonTypes(pokemonStatsJsonDocument);
+
+    // printing Pokemon damage chart
+    printPokemonDamageChart(pokemonNum, pokemonStatsJsonDocument);
+
+    // printing Pokemon Evolution chain
+    printPokemonEvolutions(pokemonEvolutionsJsonFile);
 }
 
 void printPokemonNameInEnglish(const rapidjson::Document& pokemonJsonFile)
@@ -32,41 +155,18 @@ void printPokemonNameInEnglish(const rapidjson::Document& pokemonJsonFile)
     std::cout << pokemonName;
 }
 
-void wrapPokemonJson(const std::string& pokemonNum, rapidjson::Document& pokemonJsonDocument,
-                     rapidjson::Document& pokemonStatsJsonDocument)
-{
-    std::ifstream pokemonJsonFile("");
-
-    //Closing file and reopening it so string stream can start from the beginning of the file.
-    pokemonJsonFile.clear();
-    pokemonJsonFile.close();
-    pokemonJsonFile.open("../pokemon/" + pokemonNum + '/' + pokemonNum + ".json");
-
-    rapidjson::IStreamWrapper pokemonJsonWrapper(pokemonJsonFile);
-    pokemonJsonDocument.ParseStream(pokemonJsonWrapper);
-
-    //Closing file and reopening it so string stream can start from the beginning of the file.
-    pokemonJsonFile.clear();
-    pokemonJsonFile.close();
-    pokemonJsonFile.open("../pokemon/" + pokemonNum + '/' + "pokemonStats.json");
-
-    rapidjson::IStreamWrapper pokemonJsonDataWrapper(pokemonJsonFile);
-    pokemonStatsJsonDocument.ParseStream(pokemonJsonDataWrapper);
-}
-
 int main()
 {
+    // Creating document types using rapidjson
     rapidjson::Document pokemonJsonFile;
-    rapidjson::Document pokemonStatsJsonFile;
+    std::string pokemonJsonFilename{"pokemonInfo.json"};
 
-    // prints range of Pokemon by index
-//    for(int pokemonIndex{1}; pokemonIndex < 10; pokemonIndex++)
-//    {
-//        wrapPokemonJson(std::to_string(pokemonIndex), pokemonJsonFile);
-//
-//        printPokemonNameInEnglish(pokemonJsonFile);
-//        std::cout << '\n';
-//    }
+    rapidjson::Document pokemonStatsJsonFile;
+    std::string pokemonStatsJsonFilename{"pokemonStats.json"};
+
+    rapidjson::Document pokemonEvolutionJsonFile;
+    std::string pokemonEvolutionJsonFilename{"pokemonEvolutions.json"};
+
 
     int pokemonNum{};
     int pokemonCount{151};
@@ -87,8 +187,17 @@ int main()
         }
         else
         {
-            wrapPokemonJson(std::to_string(pokemonNum), pokemonJsonFile, pokemonStatsJsonFile);
-            printPokemonData(pokemonJsonFile, pokemonStatsJsonFile);
+            wrapPokemonJson(std::to_string(pokemonNum), pokemonJsonFilename,
+                            pokemonJsonFile);
+            wrapPokemonJson(std::to_string(pokemonNum), pokemonStatsJsonFilename,
+                            pokemonStatsJsonFile);
+            wrapPokemonJson(std::to_string(pokemonNum), pokemonEvolutionJsonFilename,
+                            pokemonEvolutionJsonFile);
+
+
+            printPokemonData(std::to_string(pokemonNum),
+                             pokemonJsonFile, pokemonStatsJsonFile,
+                             pokemonEvolutionJsonFile);
             std::cout << '\n';
         }
     }
