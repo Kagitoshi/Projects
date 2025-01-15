@@ -118,6 +118,12 @@ void printPokemonTypes(const rapidjson::Document& pokemonStatsJsonDocument)
 
 void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Document& pokemonStatsJsonDocument)
 {
+    const float quadrupleDamage{4.0};
+    const float doubleDamage{2.0};
+    const float halfDamage{0.5};
+    const float quarterDamage{0.25};
+    const float noDamage{0.0};
+
     std::unordered_map<std::string, float> typeDamageMap;
 
     const rapidjson::Value& arrayOfTypes = pokemonStatsJsonDocument["types"];
@@ -138,23 +144,23 @@ void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Doc
         {
             if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
             {
-                typeDamageMap[i["name"].GetString()] = 2.0;
+                typeDamageMap[i["name"].GetString()] = doubleDamage;
             }
             else
             {
-                typeDamageMap[i["name"].GetString()] *= 2.0;
+                typeDamageMap[i["name"].GetString()] *= doubleDamage;
             }
         }
 
-        for(auto& i : pokemonTypeJsonFile["damage_relations"]["double_damage_from"].GetArray())
+        for(auto& i : pokemonTypeJsonFile["damage_relations"]["half_damage_from"].GetArray())
         {
             if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
             {
-                typeDamageMap[i["name"].GetString()] = 0.5;
+                typeDamageMap[i["name"].GetString()] = halfDamage;
             }
             else
             {
-                typeDamageMap[i["name"].GetString()] *= 0.5;
+                typeDamageMap[i["name"].GetString()] *= halfDamage;
             }
         }
 
@@ -162,11 +168,11 @@ void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Doc
         {
             if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
             {
-                typeDamageMap[i["name"].GetString()] = 0.0;
+                typeDamageMap[i["name"].GetString()] = noDamage;
             }
             else
             {
-                typeDamageMap[i["name"].GetString()] *= 0.0;
+                typeDamageMap[i["name"].GetString()] *= noDamage;
             }
         }
     }
@@ -174,8 +180,7 @@ void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Doc
     bool firstLineToPrint{true};
     for(auto const& [type, damage] : typeDamageMap)
     {
-        std::cout << type << " damage amount is " << damage << '\n';
-        if(damage == 4.0)
+        if(damage == quadrupleDamage)
         {
             if (firstLineToPrint)
             {
@@ -197,7 +202,7 @@ void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Doc
 
     for(auto const& [type, damage] : typeDamageMap)
     {
-        if(damage == 2.0)
+        if(damage == doubleDamage)
         {
             if (firstLineToPrint)
             {
@@ -219,7 +224,7 @@ void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Doc
 
     for(auto const& [type, damage] : typeDamageMap)
     {
-        if(damage == 0.5)
+        if(damage == halfDamage)
         {
             if (firstLineToPrint)
             {
@@ -241,7 +246,7 @@ void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Doc
 
     for(auto const& [type, damage] : typeDamageMap)
     {
-        if(damage == 0.25)
+        if(damage == quarterDamage)
         {
             if (firstLineToPrint)
             {
@@ -266,7 +271,7 @@ void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Doc
 
     for(auto const& [type, damage] : typeDamageMap)
     {
-        if(damage == 0.0)
+        if(damage == noDamage)
         {
             if (firstLineToPrint)
             {
