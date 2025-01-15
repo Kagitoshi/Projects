@@ -20,6 +20,20 @@ void wrapPokemonJson(const std::string& pokemonNum, const std::string& pokemonFi
     pokemonJsonDocument.ParseStream(pokemonJsonWrapper);
 }
 
+void wrapTypeDamageJson(const std::string& pokemonFilename,
+                     rapidjson::Document& pokemonJsonDocument)
+{
+    std::ifstream pokemonJsonFile("");
+
+    //Closing file and reopening it so string stream can start from the beginning of the file.
+    pokemonJsonFile.clear();
+    pokemonJsonFile.close();
+    pokemonJsonFile.open("../pokemonTypes/" + pokemonFilename);
+
+    rapidjson::IStreamWrapper pokemonJsonWrapper(pokemonJsonFile);
+    pokemonJsonDocument.ParseStream(pokemonJsonWrapper);
+}
+
 void printPokemonEvoChainDFS(std::string previousPokemonName, const rapidjson::Value& EvoChain)
 {
     // run a recursive loop to print the evolution line if "evolves_to" not null
@@ -104,7 +118,7 @@ void printPokemonTypes(const rapidjson::Document& pokemonStatsJsonDocument)
 
 void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Document& pokemonStatsJsonDocument)
 {
-    std::unordered_map<std::string, int> typeDamageMap;
+    std::unordered_map<std::string, float> typeDamageMap;
 
     const rapidjson::Value& arrayOfTypes = pokemonStatsJsonDocument["types"];
     assert(arrayOfTypes.IsArray() && "arrayOfTypes is not an array");
@@ -117,16 +131,158 @@ void printPokemonDamageChart(const std::string& pokemonNum, const rapidjson::Doc
         rapidjson::Document pokemonTypeJsonFile;
         std::string pokemonDamageJsonFilename{pokemonType + ".json"};
 
-        wrapPokemonJson(pokemonNum, pokemonDamageJsonFilename,
+        wrapTypeDamageJson(pokemonDamageJsonFilename,
                         pokemonTypeJsonFile);
 
         for(auto& i : pokemonTypeJsonFile["damage_relations"]["double_damage_from"].GetArray())
         {
+            if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
+            {
+                typeDamageMap[i["name"].GetString()] = 2.0;
+            }
+            else
+            {
+                typeDamageMap[i["name"].GetString()] *= 2.0;
+            }
+        }
 
+        for(auto& i : pokemonTypeJsonFile["damage_relations"]["double_damage_from"].GetArray())
+        {
+            if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
+            {
+                typeDamageMap[i["name"].GetString()] = 0.5;
+            }
+            else
+            {
+                typeDamageMap[i["name"].GetString()] *= 0.5;
+            }
+        }
+
+        for(auto& i : pokemonTypeJsonFile["damage_relations"]["no_damage_from"].GetArray())
+        {
+            if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
+            {
+                typeDamageMap[i["name"].GetString()] = 0.0;
+            }
+            else
+            {
+                typeDamageMap[i["name"].GetString()] *= 0.0;
+            }
         }
     }
 
+    bool firstLineToPrint{true};
+    for(auto const& [type, damage] : typeDamageMap)
+    {
+        std::cout << type << " damage amount is " << damage << '\n';
+        if(damage == 4.0)
+        {
+            if (firstLineToPrint)
+            {
+                std::cout << "Takes quadruple damage from:\n";
+                std::cout << type << '\n';
 
+                firstLineToPrint = false;
+            }
+            else
+            {
+                std::cout << type << '\n';
+            }
+        }
+        else
+        {}
+    }
+
+    firstLineToPrint = true;
+
+    for(auto const& [type, damage] : typeDamageMap)
+    {
+        if(damage == 2.0)
+        {
+            if (firstLineToPrint)
+            {
+                std::cout << "Takes double damage from:\n";
+                std::cout << type << '\n';
+
+                firstLineToPrint = false;
+            }
+            else
+            {
+                std::cout << type << '\n';
+            }
+        }
+        else
+        {}
+    }
+
+    firstLineToPrint = true;
+
+    for(auto const& [type, damage] : typeDamageMap)
+    {
+        if(damage == 0.5)
+        {
+            if (firstLineToPrint)
+            {
+                std::cout << "Takes half damage from:\n";
+                std::cout << type << '\n';
+
+                firstLineToPrint = false;
+            }
+            else
+            {
+                std::cout << type << '\n';
+            }
+        }
+        else
+        {}
+    }
+
+    firstLineToPrint = true;
+
+    for(auto const& [type, damage] : typeDamageMap)
+    {
+        if(damage == 0.25)
+        {
+            if (firstLineToPrint)
+            {
+                std::cout << "Takes quarter damage from:\n";
+                std::cout << type << '\n';
+
+                firstLineToPrint = false;
+            }
+            else
+            {
+                std::cout << type << '\n';
+            }
+        }
+        else
+        {}
+    }
+
+    firstLineToPrint = true;
+
+
+    firstLineToPrint = true;
+
+    for(auto const& [type, damage] : typeDamageMap)
+    {
+        if(damage == 0.0)
+        {
+            if (firstLineToPrint)
+            {
+                std::cout << "Takes no damage from:\n";
+                std::cout << type << '\n';
+
+                firstLineToPrint = false;
+            }
+            else
+            {
+                std::cout << type << '\n';
+            }
+        }
+        else
+        {}
+    }
 }
 
 void printPokemonData(const std::string& pokemonNum,
