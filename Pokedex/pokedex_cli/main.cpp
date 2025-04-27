@@ -3,29 +3,25 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <windows.h> //To set the encoding for the windows cli to print font correctly. Windows only.
 
 int main()
 {
+    //Setting the encoding of the console, so it prints the font correctly. Only for windows.
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+
     // Creating document types using rapidjson
     rapidjson::Document pokemonJsonFile;
     std::string pokemonJsonFilename{"pokedex.json"};
-
-//    rapidjson::Document pokemonJsonFile;
-//    std::string pokemonJsonFilename{"pokemonInfo.json"};
-//
-//    rapidjson::Document pokemonStatsJsonFile;
-//    std::string pokemonStatsJsonFilename{"pokemonStats.json"};
-//
-//    rapidjson::Document pokemonEvolutionJsonFile;
-//    std::string pokemonEvolutionJsonFilename{"pokemonEvolutions.json"};
-
 
     int pokemonNum{};
     int pokemonCount{151};
 
     while(true)
     {
-        std::cout << "Enter a Pokemon's national index number: ";
+
+        std::cout << "Enter a Pokémon's national index number: ";
         std::cin >> pokemonNum;
 
         if(pokemonNum == 9876)
@@ -34,24 +30,14 @@ int main()
         }
         else if(pokemonNum > pokemonCount || pokemonNum < 0)
         {
-            std::cout << "This PokeDex only contains the first 151 pokemon.\n"
-                      << "Please enter an Pokemon index that is within the Gen 1 Pokedex.\n";
+            std::cout << "This Pokédex only contains the first 151 pokemon.\n"
+                      << "Please enter an Pokémon index that is within the Gen 1 Pokédex.\n";
         }
         else
         {
-            wrapPokemonJson(std::to_string(pokemonNum), pokemonJsonFilename,
-                            pokemonJsonFile);
-//            wrapPokemonJson(std::to_string(pokemonNum), pokemonStatsJsonFilename,
-//                            pokemonStatsJsonFile);
-//            wrapPokemonJson(std::to_string(pokemonNum), pokemonEvolutionJsonFilename,
-//                            pokemonEvolutionJsonFile);
+            wrapPokemonJson(pokemonJsonFilename, pokemonJsonFile);
 
-
-//            printPokemonData(std::to_string(pokemonNum),
-//                             pokemonJsonFile, pokemonStatsJsonFile,
-//                             pokemonEvolutionJsonFile);
-            printPokemonData(pokemonNum,
-                             pokemonJsonFile);
+            printPokemonData(pokemonNum, pokemonJsonFile);
             std::cout << '\n';
         }
     }

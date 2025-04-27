@@ -108,7 +108,18 @@ void printPokemonName(const int& pokemonNum, const rapidjson::Document& pokemonJ
     int pokemonNumInArray {pokemonNum - 1};
 
     std::string pokemonName{pokedexJson[pokemonNumInArray]["name"]["english"].GetString()};
-    std::cout << "\nPokemon Name: " << pokemonName << '\n';
+    std::string pokemonJPNName{pokedexJson[pokemonNumInArray]["name"]["japanese"].GetString()};
+    int pokemonNationalIndex{pokedexJson[pokemonNumInArray]["id"].GetInt()};
+    std::string pokemonSpecies{pokedexJson[pokemonNumInArray]["species"].GetString()};
+    std::string pokemonDescription{pokedexJson[pokemonNumInArray]["description"].GetString()};
+
+    std::cout << "\n***** "<< pokemonName << " *****\n"
+              << "Pokémon Name: " << pokemonName << '\n'
+              << "Japanese Name: " << pokemonJPNName << '\n'
+              << "National Pokédex Index #: " << pokemonNationalIndex << '\n'
+              << "Species: " << pokemonSpecies << '\n'
+              << "\n***** "<< "Description" << " *****\n"
+              << pokemonDescription << '\n';
 }
 
 void printPokemonTypes(const int& pokemonNum, const rapidjson::Document& pokemonJsonFile)
@@ -118,6 +129,8 @@ void printPokemonTypes(const int& pokemonNum, const rapidjson::Document& pokemon
 
     int pokemonNumInArray {pokemonNum - 1};
     int typeNum{1};
+
+    std::cout << "\n***** "<< "Pokémon Type and Damage Chart" << " *****\n";
 
     for(auto& i : pokedexJson[pokemonNumInArray]["type"].GetArray())
     {
@@ -198,16 +211,21 @@ void printPokemonDamageChart(const int& pokemonNum, const rapidjson::Document& p
     {
         if(damage == quadrupleDamage)
         {
+            std::string capitalizedType{type};
+            capitalizedType[0] = std::toupper(capitalizedType[0]);
+
             if (firstLineToPrint)
             {
                 std::cout << "\nTakes quadruple damage from: ";
-                std::cout << type;
+
+                // Capitalizing the first character
+                std::cout << capitalizedType;
 
                 firstLineToPrint = false;
             }
             else
             {
-                std::cout << ", " << type;
+                std::cout << ", " << capitalizedType;
             }
         }
         else
@@ -220,16 +238,19 @@ void printPokemonDamageChart(const int& pokemonNum, const rapidjson::Document& p
     {
         if(damage == doubleDamage)
         {
+            std::string capitalizedType{type};
+            capitalizedType[0] = std::toupper(capitalizedType[0]);
+
             if (firstLineToPrint)
             {
                 std::cout << "\nTakes double damage from: ";
-                std::cout << type;
+                std::cout << capitalizedType;
 
                 firstLineToPrint = false;
             }
             else
             {
-                std::cout << ", " << type;
+                std::cout << ", " << capitalizedType;
             }
         }
         else
@@ -242,16 +263,19 @@ void printPokemonDamageChart(const int& pokemonNum, const rapidjson::Document& p
     {
         if(damage == halfDamage)
         {
+            std::string capitalizedType{type};
+            capitalizedType[0] = std::toupper(capitalizedType[0]);
+
             if (firstLineToPrint)
             {
                 std::cout << "\nTakes half damage from: ";
-                std::cout << type;
+                std::cout << capitalizedType;
 
                 firstLineToPrint = false;
             }
             else
             {
-                std::cout << ", " << type;
+                std::cout << ", " << capitalizedType;
             }
         }
         else
@@ -264,16 +288,19 @@ void printPokemonDamageChart(const int& pokemonNum, const rapidjson::Document& p
     {
         if(damage == quarterDamage)
         {
+            std::string capitalizedType{type};
+            capitalizedType[0] = std::toupper(capitalizedType[0]);
+
             if (firstLineToPrint)
             {
                 std::cout << "\nTakes quarter damage from: ";
-                std::cout << type;
+                std::cout << capitalizedType;
 
                 firstLineToPrint = false;
             }
             else
             {
-                std::cout << ", " << type;
+                std::cout << ", " << capitalizedType;
             }
         }
         else
@@ -286,16 +313,19 @@ void printPokemonDamageChart(const int& pokemonNum, const rapidjson::Document& p
     {
         if(damage == noDamage)
         {
+            std::string capitalizedType{type};
+            capitalizedType[0] = std::toupper(capitalizedType[0]);
+
             if (firstLineToPrint)
             {
                 std::cout << "\nTakes no damage from: ";
-                std::cout << type;
+                std::cout << capitalizedType;
 
                 firstLineToPrint = false;
             }
             else
             {
-                std::cout << ", " << type;
+                std::cout << ", " << capitalizedType;
             }
         }
         else
@@ -307,7 +337,6 @@ void printPokemonDamageChart(const int& pokemonNum, const rapidjson::Document& p
 
 void printPokemonData(const int& pokemonNum, const rapidjson::Document& pokemonJsonFile)
 {
-
     // printing the Pokemon's name with the first letter capitalized.
     printPokemonName(pokemonNum, pokemonJsonFile);
 

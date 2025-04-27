@@ -6,11 +6,9 @@
 #include <fstream>
 
 
-void wrapPokemonJson(const std::string& pokemonNum, const std::string& pokemonFilename,
-                     rapidjson::Document& pokemonJsonDocument);
+void wrapPokemonJson(const std::string& pokemonFilename, rapidjson::Document& pokemonJsonDocument);
 
-void wrapTypeDamageJson(const std::string& pokemonFilename,
-                        rapidjson::Document& pokemonJsonDocument);
+void wrapTypeDamageJson(const std::string& pokemonFilename, rapidjson::Document& pokemonJsonDocument);
 
 
 #endif //POKEDEX_CLI_WRAPPINGJSONFILES_H
