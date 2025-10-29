@@ -5,6 +5,7 @@
 #include <vector>
 #include <windows.h> //To set the encoding for the windows cli to print font correctly. Windows only.
 
+
 int main()
 {
     //Setting the encoding of the console, so it prints the font correctly. Only for windows.
@@ -14,7 +15,7 @@ int main()
     // Creating document types using rapidjson
     rapidjson::Document pokemonJsonFile;
     std::string pokemonJsonFilename{"pokedex.json"};
-
+    
     int pokemonNum{};
     int pokemonCount{151};
 

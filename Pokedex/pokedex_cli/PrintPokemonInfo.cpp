@@ -139,7 +139,6 @@ void printPokemonTypes(const int& pokemonNum, const rapidjson::Document& pokemon
         std::cout << "Type " << typeNum << ": " << pokemonType << '\n';
         typeNum++;
     }
-
 }
 
 void printPokemonDamageChart(const int& pokemonNum, const rapidjson::Document& pokemonJsonFile)
@@ -334,10 +333,12 @@ void printPokemonDamageChart(const int& pokemonNum, const rapidjson::Document& p
 
     std::cout << '\n';
 }
-
+//std::string printPokemonData(const int& pokemonNum, const rapidjson::Document& pokemonJsonFile)
 void printPokemonData(const int& pokemonNum, const rapidjson::Document& pokemonJsonFile)
 {
     // printing the Pokemon's name with the first letter capitalized.
+    //printPokemonName(pokemonNum, pokemonJsonFile, stringStreamVar)
+    //e.g. https://stackoverflow.com/questions/5193173/getting-cout-output-to-a-stdstring
     printPokemonName(pokemonNum, pokemonJsonFile);
 
     // printing Pokemon types

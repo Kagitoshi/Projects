@@ -1,4 +1,5 @@
-#include <catch2/catch_test_macros.hpp>
+#include "catch2/catch_test_macros.hpp"
+
 
 unsigned int Factorial( unsigned int number )
 {
@@ -12,4 +13,12 @@ TEST_CASE( "Factorials are computed", "[factorial]" )
     REQUIRE( Factorial(2) == 2 );
     REQUIRE( Factorial(3) == 6 );
     REQUIRE( Factorial(10) == 3628800 );
+    REQUIRE( Factorial(10) == 36238800 );
 }
+
+
+//TEST_CASE( "Check if Pokemon count variable has been initialized.")
+//{
+//    REQUIRE( pokemonCount == 151);
+//}
+//
