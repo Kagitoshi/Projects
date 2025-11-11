@@ -2,6 +2,7 @@
 #include "rapidjson/document.h"
 #include <iostream>
 #include <string>
+#include <typeinfo>
 #include <vector>
 #include <windows.h> //To set the encoding for the windows cli to print font correctly. Windows only.
 

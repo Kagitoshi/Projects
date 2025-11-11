@@ -1,5 +1,51 @@
 #include "PrintPokemonInfo.h"
 
+std::unordered_map<std::string, float> populateTypeDamageMap(const rapidjson::Document& pokemonTypeJsonFile,
+                                                             std::unordered_map<std::string, float>& typeDamageMap)
+{
+    const float doubleDamage{2.0};
+    const float halfDamage{0.5};
+    const float noDamage{0.0};
+
+    for(auto& i : pokemonTypeJsonFile["damage_relations"]["double_damage_from"].GetArray())
+    {
+        if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
+        {
+            typeDamageMap[i["name"].GetString()] = doubleDamage;
+        }
+        else
+        {
+            typeDamageMap[i["name"].GetString()] *= doubleDamage;
+        }
+    }
+
+    for(auto& i : pokemonTypeJsonFile["damage_relations"]["half_damage_from"].GetArray())
+    {
+        if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
+        {
+            typeDamageMap[i["name"].GetString()] = halfDamage;
+        }
+        else
+        {
+            typeDamageMap[i["name"].GetString()] *= halfDamage;
+        }
+    }
+
+    for(auto& i : pokemonTypeJsonFile["damage_relations"]["no_damage_from"].GetArray())
+    {
+        if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
+        {
+            typeDamageMap[i["name"].GetString()] = noDamage;
+        }
+        else
+        {
+            typeDamageMap[i["name"].GetString()] *= noDamage;
+        }
+    }
+
+    return typeDamageMap;
+}
+
 void printEvolutionChain(const int& pokemonNumInArray, const rapidjson::Document& pokemonJsonFile)
 {
     const rapidjson::Value& pokedexJson = pokemonJsonFile;
@@ -167,41 +213,7 @@ void printPokemonDamageChart(const int& pokemonNum, const rapidjson::Document& p
         wrapTypeDamageJson(pokemonDamageJsonFilename,
                            pokemonTypeJsonFile);
 
-        for(auto& i : pokemonTypeJsonFile["damage_relations"]["double_damage_from"].GetArray())
-        {
-            if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
-            {
-                typeDamageMap[i["name"].GetString()] = doubleDamage;
-            }
-            else
-            {
-                typeDamageMap[i["name"].GetString()] *= doubleDamage;
-            }
-        }
-
-        for(auto& i : pokemonTypeJsonFile["damage_relations"]["half_damage_from"].GetArray())
-        {
-            if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
-            {
-                typeDamageMap[i["name"].GetString()] = halfDamage;
-            }
-            else
-            {
-                typeDamageMap[i["name"].GetString()] *= halfDamage;
-            }
-        }
-
-        for(auto& i : pokemonTypeJsonFile["damage_relations"]["no_damage_from"].GetArray())
-        {
-            if(typeDamageMap.find(i["name"].GetString()) == typeDamageMap.end())
-            {
-                typeDamageMap[i["name"].GetString()] = noDamage;
-            }
-            else
-            {
-                typeDamageMap[i["name"].GetString()] *= noDamage;
-            }
-        }
+        populateTypeDamageMap(pokemonTypeJsonFile, typeDamageMap);
     }
 
     bool firstLineToPrint{true};
