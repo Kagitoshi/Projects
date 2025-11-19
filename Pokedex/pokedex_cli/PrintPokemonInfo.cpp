@@ -46,6 +46,8 @@ std::unordered_map<std::string, float> populateTypeDamageMap(const rapidjson::Do
     return typeDamageMap;
 }
 
+
+
 void printEvolutionChain(const int& pokemonNumInArray, const rapidjson::Document& pokemonJsonFile)
 {
     const rapidjson::Value& pokedexJson = pokemonJsonFile;
