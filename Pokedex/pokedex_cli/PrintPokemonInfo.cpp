@@ -46,6 +46,20 @@ std::unordered_map<std::string, float> populateTypeDamageMap(const rapidjson::Do
     return typeDamageMap;
 }
 
+void getFirstInEvoChain(int& pokemonNumInArray, const rapidjson::Value& pokemonJsonFile)
+{
+    while (true)
+    {
+        if(pokemonJsonFile[pokemonNumInArray]["evolution"].HasMember("prev"))
+        {
+            pokemonNumInArray = (std::stoi(pokemonJsonFile[pokemonNumInArray]["evolution"]["prev"][0].GetString())  - 1);
+        }
+        else
+        {
+            break;
+        }
+    }
+}
 
 
 void printEvolutionChain(const int& pokemonNumInArray, const rapidjson::Document& pokemonJsonFile)
@@ -96,17 +110,7 @@ void printPokemonEvolutions(const int& pokemonNum, const rapidjson::Document& po
 
     if(pokedexJson[pokemonNumInArray]["evolution"].MemberCount())
     {
-        while (true)
-        {
-            if(pokedexJson[pokemonNumInArray]["evolution"].HasMember("prev"))
-            {
-                pokemonNumInArray = (std::stoi(pokedexJson[pokemonNumInArray]["evolution"]["prev"][0].GetString())  - 1);
-            }
-            else
-            {
-                break;
-            }
-        }
+        getFirstInEvoChain(pokemonNumInArray, pokedexJson);
 
         std::cout << "\n***** Evolution Chain *****\n";
 

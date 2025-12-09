@@ -48,20 +48,32 @@ TEST_CASE("Check Pokemon Damage Chart", "[populateTypeDamageMap]")
 
 }
 
+TEST_CASE("Check Pokemon Evo Chart", "[getFirstInEvoChain]")
+{
+    const int charmandersIndexInTheArrayControl{3};
+    int charmanderIndexInTheArray{3};
+    int charmeleonIndexInTheArray{4};
+    int charizardIndexInTheArray{5};
+    int pikachuIndexInTheArray{24};
+    int raichuIndexInTheArray{25};
 
+    rapidjson::Document pokemonJsonFile;
+    std::string pokemonJsonFilename{"pokedex.json"};
+    wrapPokemonJson(pokemonJsonFilename, pokemonJsonFile);
 
-//
-//unsigned int Factorial( unsigned int number )
-//{
-//    return number > 1 ? Factorial(number-1) * number : 1;
-//}
-//
-//TEST_CASE( "Factorials are computed", "[factorial]" )
-//{
-//    REQUIRE( Factorial(0) == 1 );
-//    REQUIRE( Factorial(1) == 1 );
-//    REQUIRE( Factorial(2) == 2 );
-//    REQUIRE( Factorial(3) == 6 );
-//    REQUIRE( Factorial(10) == 3628800 );
-//    REQUIRE( Factorial(10) != 36238800 );
-//}
+    const rapidjson::Value& pokedexJson = pokemonJsonFile;
+    assert(pokedexJson.IsArray() && "pokedexJson is not an array");
+
+    getFirstInEvoChain(charmanderIndexInTheArray, pokemonJsonFile);
+    getFirstInEvoChain(charmeleonIndexInTheArray, pokemonJsonFile);
+    getFirstInEvoChain(charizardIndexInTheArray, pokemonJsonFile);
+    getFirstInEvoChain(pikachuIndexInTheArray, pokemonJsonFile);
+    getFirstInEvoChain(raichuIndexInTheArray, pokemonJsonFile);
+
+    REQUIRE(charmanderIndexInTheArray == charmandersIndexInTheArrayControl);
+    REQUIRE(charmeleonIndexInTheArray == charmandersIndexInTheArrayControl);
+    REQUIRE(charizardIndexInTheArray == charmandersIndexInTheArrayControl);
+    REQUIRE(pikachuIndexInTheArray != charmandersIndexInTheArrayControl);
+    REQUIRE(raichuIndexInTheArray != charmandersIndexInTheArrayControl);
+
+}
